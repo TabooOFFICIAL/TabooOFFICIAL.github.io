@@ -239,11 +239,11 @@ class App extends Component {
                   <br />
                   <p style={{ fontSize: "0.9rem" }}>
                     TABOOPUNKS are up to 10,000 uniquely generated characters, no two are exactly alike, 
-                    and each of them can be officialy owned by a single person on the ethereum blockchain.
-                    They will have up to 300 attributes across 10 to 20 catagories to be entirely unique by at least 3 degrees of seperation. 
+                    and each of them can be officially owned by a single person on the ethereum blockchain.
+                    They will have up to 300 attributes across 10 to 20 categories to be entirely unique by at least 3 degrees of separation.
                   </p>
                   <p style={{ fontSize: "0.9rem" }}>
-                    Not only are TABOOPUNKS beautifully designed collectible characters,
+                  Not only are TABOOPUNKS beautifully designed collectible characters,
                     they also can serve as your ticket to the world of exclusive content and VIP parties.
                     They will basically grant you the owner, superpowers on the TABOO marketplace. From invitational private parties with our carefully selected supermodels to access to all areas on the TABOO marketplace and some yet undisclosed utilities. 
                   </p>
@@ -253,7 +253,7 @@ class App extends Component {
                   </h4>
                   <br />
                   <p style={{ fontSize: "1rem" }} className="text-danger">
-                    <i>The TABOOPUNKS will be offered on a first come first serve basis to TABOO holders at a mint price determined by one factor: <b>if you hold any amount of $TABOO your minting price is 0.035ETH, otherwise, your minting price is 0.05ETH make sure to vbalidate you address to get a discount!</b></i>
+                    <i>The TABOOPUNKS will be offered on a first come first serve basis to TABOO holders at a mint price determined by one factor: <b>if you hold any amount of $TABOO your minting price is 0.035ETH, otherwise, your minting price is 0.05ETH make sure to validate you address to get a discount!</b></i>
                   </p>
                 </div>
                 <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
