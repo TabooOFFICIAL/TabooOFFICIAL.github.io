@@ -1,0 +1,36 @@
+html,body, #root {
+  height: 100vh !important;
+  background-image: url("https://cdn.shopify.com/s/files/1/0573/4540/9212/files/Untitled_design_44.png?v=1625449457");
+  background-size: cover;
+}
+
+.mainDesc {
+  text-align: center;
+}
+
+.App {
+  height: 100vh;
+
+}
+.container {
+  height: inherit;
+}
+
+.App-logo {
+  height: 40vmin;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #09d3ac;
+}
