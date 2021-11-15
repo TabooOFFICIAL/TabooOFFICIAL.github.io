@@ -3,6 +3,8 @@ import { Form, Button, InputGroup, Container, FormControl, Card } from "react-bo
 import Web3 from "web3";
 import axios from 'axios';
 import emailjs from 'emailjs-com';
+import Web3Modal from 'web3modal';
+import WalletConnectProvider from "@walletconnect/web3-provider";
 
 import "./App.css";
 
@@ -134,19 +136,33 @@ class App extends Component {
 
     const { web3 } = this.state;
 
-    try {
-      // Request account access if needed
-      window.ethereum.enable().then(() => {
-        this.setState({ isWalletConnected: true });
-      });
-      // Accounts now exposed
-    } catch (error) {
+    const providerOptions = {
+      walletconnect: {
+        package: WalletConnectProvider, // required
+        options: {
+          infuraId: process.env.REACT_APP_INFURA_ID
+        }
+      }
+    };
+    
+    const web3Modal = new Web3Modal({
+      providerOptions // required
+    });
+
+    const provider = await web3Modal.connect();
+
+    if(provider) {
+      const web3 = new Web3(provider);
+      this.setState({ web3: web3, isWalletConnected: true });
+
+    } else {
       this.setState({ isWalletConnected: false });
     }
 
     // Use web3 to get the user's accounts.
-    const accounts = await web3.eth.getAccounts();
+    const accounts = await this.state.web3.eth.getAccounts();
 
+    console.log(accounts)
     this.setState({accounts: accounts });
 
   }
@@ -290,7 +306,7 @@ class App extends Component {
 
                   <div style={{ textAlign: 'left' }}>
                     <Form.Text id="validateAddress" muted>
-                    Not a member of our Discord? join here! <a href="https://discord.gg/g7rufK72" target="_blank">https://discord.gg/g7rufK72</a>
+                    Not a member of our Discord? join here! <a href="https://discord.gg/tabootoken" target="_blank">https://discord.gg/tabootoken</a>
                     </Form.Text>
                   </div>
                   <Form.Floating className="mb-3">
