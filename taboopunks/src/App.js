@@ -43,8 +43,7 @@ class App extends Component {
       web3 = new Web3(provider);
       console.log("No web3 instance injected, using Local web3.");
     }
-
-    this.setState({ web3: web3 });
+    this.setState({ web3: web3 });    
 
     this.isWalletConnected(web3);
   }
@@ -161,8 +160,6 @@ class App extends Component {
 
     // Use web3 to get the user's accounts.
     const accounts = await this.state.web3.eth.getAccounts();
-
-    console.log(accounts)
     this.setState({accounts: accounts });
 
   }
@@ -180,7 +177,6 @@ class App extends Component {
       if (network != 'main') {
         alert("plese make sure your wallet is connected and  your network is set to Ethereum's Mainnet on metamask");
       } else {
-
         if (accounts.lenght > 0 ) {
           this.doPurchase();
         }
@@ -189,7 +185,6 @@ class App extends Component {
           this.setState({ accounts: accounts });
           this.doPurchase();
         }
-
       }
     }
   }
@@ -201,26 +196,23 @@ class App extends Component {
     const toAddress = process.env.REACT_APP_TABOOPUNK_ADDRESS;
     const calcAmount = this.state.price * this.state.amount;
     const amount = calcAmount.toString();
-    const amountToSend = web3.utils.toWei(amount, "ether"); 
-    const send = web3.eth.sendTransaction({
-      from:accounts[0],
-      to:toAddress,
-      value:amountToSend 
-    }).then(async result => {
-      this.storeData(result.transactionHash);
+    const amountToSend = web3.utils.toWei(amount, "ether");
+    const connected = await web3.eth.getAccounts();
 
-      await emailjs.send(
-        process.env.REACT_APP_EMAIL_SERVICE_ID,
-        process.env.REACT_APP_EMAIL_TEMPLATE_ID,
-        {
-          amount: this.state.amount,
-          txid: this.state.txid,
-          purchasePrice: this.state.price
-        },
-        process.env.REACT_APP_EMAIL_USER_ID
-      );
-      alert(`Congratulations! you have successfully purchased a taboopunk, an email confirmation will arrive to ${this.state.email} shortly, Check SPAM if you dont see it in your inbox`);
-    });
+    console.log(connected);
+    if (connected.length > 0) {
+      const send = web3.eth.sendTransaction({
+        from:accounts[0],
+        to:toAddress,
+        value:amountToSend 
+      }).then(async result => {
+        this.storeData(result.transactionHash);
+        this.sendConfirmationEmail();
+        alert(`Congratulations! you have successfully purchased a taboopunk, an email confirmation will arrive to ${this.state.email} shortly, Check SPAM if you dont see it in your inbox`);
+      });
+    } else {
+      alert("No wallet connected");
+    }
   }
 
   storeData = (txid) => {
@@ -241,6 +233,19 @@ class App extends Component {
     .catch(function (error) {
       console.log(error);
     });
+  }
+
+  sendConfirmationEmail = async () => {
+    await emailjs.send(
+      process.env.REACT_APP_EMAIL_SERVICE_ID,
+      process.env.REACT_APP_EMAIL_TEMPLATE_ID,
+      {
+        amount: this.state.amount,
+        txid: this.state.txid,
+        purchasePrice: this.state.price
+      },
+      process.env.REACT_APP_EMAIL_USER_ID
+    );
   }
 
   render() {
