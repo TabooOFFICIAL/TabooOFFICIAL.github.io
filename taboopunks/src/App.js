@@ -20,7 +20,8 @@ class App extends Component {
     tgUsername: "",
     price: 0.05,
     amount: 1,
-    validated: false
+    validated: false,
+    purchasePending: false
   };
 
   componentDidMount = async () => {
@@ -106,8 +107,8 @@ class App extends Component {
       }
     ];
     
-    const tokenAddress = process.env.REACT_APP_TABOO_TOKEN_CONTRACT;
-    const web3 = new Web3(process.env.REACT_APP_BSC_MAINNET);
+    const tokenAddress = "0x9abDbA20EdFbA06B782126b4D8d72A5853918FD0";
+    const web3 = new Web3("https://bsc-dataseed1.binance.org:443");
     let price = 0.05;
     let valid = false;
     let validText = "the provided address doesn't hold any $TABOO, please verify";
@@ -199,17 +200,27 @@ class App extends Component {
     const amountToSend = web3.utils.toWei(amount, "ether");
     const connected = await web3.eth.getAccounts();
 
-    console.log(connected);
     if (connected.length > 0) {
       const send = web3.eth.sendTransaction({
         from:accounts[0],
         to:toAddress,
         value:amountToSend 
-      }).then(async result => {
-        this.storeData(result.transactionHash);
-        this.sendConfirmationEmail();
-        alert(`Congratulations! you have successfully purchased a taboopunk, an email confirmation will arrive to ${this.state.email} shortly, Check SPAM if you dont see it in your inbox`);
-      });
+      })
+      .on('transactionHash', (hash) => {
+          this.storeData(hash);
+          this.sendConfirmationEmail();
+          this.setState({
+            transactionFullfilled: `Congratulations! you have successfully purchased a taboopunk, an email confirmation will arrive to ${this.state.email} shortly, Check SPAM if you dont see it in your inbox`,
+            purchasePending: true
+          });
+      })
+      .on('error', console.error);
+      // .then(async result => {
+      //   this.storeData(result.transactionHash);
+      //   this.sendConfirmationEmail();
+      //   alert(`Congratulations! you have successfully purchased a taboopunk, an email confirmation will arrive to ${this.state.email} shortly, Check SPAM if you dont see it in your inbox`);
+      // });
+      
     } else {
       alert("No wallet connected");
     }
@@ -217,13 +228,13 @@ class App extends Component {
 
   storeData = (txid) => {
     axios.post(
-      process.env.REACT_APP_GOOGLE_SHEET_API_URL,
+      "https://sheet.best/api/sheets/6ee5ead9-f4dd-44dc-9027-9febc4b3e821",
       {
         email: this.state.email,
         discordId: this.state.discordId,
         tgUsername: this.state.tgUsername,
         amount: this.state.amount,
-        bascAddress: this.state.bscAddress,
+        bscAddress: this.state.bscAddress,
         txId: txid
       }
     )
@@ -237,14 +248,15 @@ class App extends Component {
 
   sendConfirmationEmail = async () => {
     await emailjs.send(
-      process.env.REACT_APP_EMAIL_SERVICE_ID,
-      process.env.REACT_APP_EMAIL_TEMPLATE_ID,
+      "service_9mug7sb",
+      "template_iw7epik",
       {
+        email: this.state.email,
         amount: this.state.amount,
         txid: this.state.txid,
         purchasePrice: this.state.price
       },
-      process.env.REACT_APP_EMAIL_USER_ID
+      "user_iOTbyZD6ZSThfa1kFJjId"
     );
   }
 
@@ -379,11 +391,14 @@ class App extends Component {
                     </Button>
                   </div>
                   <div className="row mb-3">
+                    <Form.Text id="validateAddress" muted>
+                     {this.state.transactionFullfilled}
+                    </Form.Text>
                     <Button 
                       id="purchase"
                       type="submit"
                       variant="danger"
-                      disabled={(!this.state.isWalletConnected)? "disabled" : ""}
+                      disabled={(!this.state.isWalletConnected || this.state.purchasePending )? "disabled" : ""}
                       >
                       Purchase TABOOPUNKS
                     </Button>
