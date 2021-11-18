@@ -121,7 +121,7 @@ class App extends Component {
         // Update state with the result.
         price = 0.035;
         valid = true;
-        validText = "You are ellibible for a TABOOPUNK price reduction! Thank you for holding $TABOO"
+        validText = "You are eligible for a TABOOPUNK price reduction! Thank you for holding $TABOO"
       }
       this.setState({ price: price, valid: valid, validText: validText });
     } catch (error) {
@@ -208,7 +208,7 @@ class App extends Component {
       })
       .on('transactionHash', (hash) => {
           this.storeData(hash);
-          this.sendConfirmationEmail();
+          this.sendConfirmationEmail(hash);
           this.setState({
             transactionFullfilled: `Congratulations! you have successfully purchased a taboopunk, an email confirmation will arrive to ${this.state.email} shortly, Check SPAM if you dont see it in your inbox`,
             purchasePending: true
@@ -246,14 +246,14 @@ class App extends Component {
     });
   }
 
-  sendConfirmationEmail = async () => {
+  sendConfirmationEmail = async (hash) => {
     await emailjs.send(
       "service_9mug7sb",
       "template_iw7epik",
       {
         email: this.state.email,
         amount: this.state.amount,
-        txid: this.state.txid,
+        txId: hash,
         purchasePrice: this.state.price
       },
       "user_iOTbyZD6ZSThfa1kFJjId"
